@@ -1,0 +1,11 @@
+{
+  "name": "back-to-front",
+  "version": "1.0.0",
+  "description": "Facilite la création de services front pour acceder à un back service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dominique MAURAS",
+  "license": "ISC"
+}
