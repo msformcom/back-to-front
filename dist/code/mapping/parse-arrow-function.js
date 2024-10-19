@@ -20,11 +20,19 @@ function parseArrowFunction(f) {
     var setter;
     let propertyName;
     try {
-        setter = eval("(" + newParameterName + ",value)=>" + setterString);
-    }
-    catch (error) { }
-    try {
-        propertyName = f.toString().match("([a-zA-Z]+)$")[0];
+        let p = f.toString().match("([$a-zA-Z][$a-zA-Z0-9]*)$");
+        if (p) {
+            propertyName = p[0];
+        }
+        else {
+            p = f.toString().match("(\\[[$a-zA-Z][$a-zA-Z0-9]*\\])$");
+            if (p) {
+                propertyName = p[0];
+            }
+        }
+        if (propertyName) {
+            setter = eval("(" + newParameterName + ",value)=>" + setterString);
+        }
     }
     catch (error) { }
     var resultat = {

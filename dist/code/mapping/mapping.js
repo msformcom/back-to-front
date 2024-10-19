@@ -3,6 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Mapping = void 0;
 const map_options_1 = require("./map-options");
 const parse_arrow_function_1 = require("./parse-arrow-function");
+/**
+ * Mapping :
+ * à partir du TSource
+ * vers le TTarget
+ */
 class Mapping {
     constructor(mapper, name) {
         this.mapper = mapper;
@@ -21,6 +26,9 @@ class Mapping {
     }
     reverse() {
         var name = this.name.split("|").reverse().join("|");
+        if (this.mapper.maps[name]) {
+            return this.mapper.maps[name];
+        }
         var r = new Mapping(this.mapper, name);
         r.ctorTarget = this.ctorSource;
         r.ctorSource = this.ctorTarget;
@@ -28,7 +36,10 @@ class Mapping {
         this.mapper.maps[name] = r;
         return r;
     }
-    map(obj) {
+    back(obj) {
+        return this.reverse().targetFromSource(obj);
+    }
+    targetFromSource(obj) {
         let o = new this.ctorTarget();
         for (let m of this.mappings) {
             if (m.targetInfo.set) {
@@ -36,7 +47,7 @@ class Mapping {
                 let value = m.sourceInfo.get(obj);
                 if (m.transform) {
                     // Transformation de la propriété
-                    value = m.transform.sourceToTarget(value);
+                    value = m.transform.targetFromSource(value);
                 }
                 m.targetInfo.set(o, value);
             }
@@ -45,4 +56,4 @@ class Mapping {
     }
 }
 exports.Mapping = Mapping;
-//# sourceMappingURL=map.js.map
+//# sourceMappingURL=mapping.js.map

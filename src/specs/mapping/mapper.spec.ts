@@ -1,33 +1,38 @@
 import "jasmine";
 import { Mapper } from "../../code/mapping/mapper";
-import { Type1 } from "./type1";
-import { Type2 } from "./type2";
+import { POCOInterface } from "./poco.interface";
+import { DTOInterface } from "./dto.interface";
+import { Mapping } from "../../code/mapping/mapping";
 
 describe("mapperTest",()=>{
     var mapper:Mapper;
-    var obj1:Type1;
+    var poco:POCOInterface;
+    var dto:DTOInterface;
+
 
     beforeAll(()=>{
-        obj1={ a:34, b:"toto", c:new Date(1968,8,11),d:[{ a:34, b:"toto"}]};
+        poco={ a:34, b:"toto", c:new Date(1968,8,11),d:[{ a:34, b:"toto"}],e:{ a:34, b:"toto",c:new Date()}};
+        dto={ a:34, b:"toto", c:new Date(1968,8,11).toDateString(),d:[{ a:34, b:"toto"}],e:'{ a:34, b:"toto"}'}
         mapper=new Mapper();
 
-        mapper.createMap<Type1,Type2>("Type1|Type2")
-            .forMember(c=>c.a,o=>{ o.mapFrom(s=>s.a)})
-            .forMember(c=>c.b,o=>{ o.mapFrom(s=>s.b)})
-            .forMember(c=>c.c,o=>{ o.mapFrom(s=>new Date(s.c))})
-            .reverse()
-            .forMember(c=>c.c,o=>{o.mapFrom(s=>s.c.toISOString())});
+        mapper.createMap<DTOInterface, POCOInterface>("DTO=>POCO")
+            .forMember(c=>c.a,o=> o.mapFrom(s=>s.a))
+            .forMember(c=>c.b,o=> o.mapFrom(s=>s.b))
+            .forMember(c=>c.c,o=> o.mapFrom(s=>s.c).useTransform(Mapper.DateTransform))
+            .forMember(c=>c.e,o=> o.mapFrom(s=>s.e).useTransform(Mapper
+                                                                    .JSONTransform<DTOInterface>()
+                                                                    .pipe(mapper.maps["DTO=>POCO"] as Mapping<DTOInterface |undefined,POCOInterface|undefined>)));
     });
     it("should map",()=>{
-        var r=mapper.map("Type1|Type2",obj1);
+        var newPoco=mapper.map<POCOInterface>("DTP=>POCO",dto);
 
-        expect(r.a).toBe(obj1.a);
-        expect(r.b).toBe(obj1.b);
-        expect(r.c).toEqual(new Date(obj1.c));
+        expect(newPoco.a).toBe(poco.a);
+        expect(newPoco.b).toBe(poco.b);
+        expect(newPoco.c).toEqual(poco.c);
 
-        var r2=mapper.map("Type2|Type1",r);
-        expect(r2.a).toBe(r.a);
-        expect(r2.b).toBe(r.b);
-        expect(r2.c).toEqual(r.c.toISOString());
+        var newDto=mapper.map<DTOInterface>("POCO=>DTO",newPoco);
+        expect(newDto.a).toEqual(dto.a);
+        expect(newDto.b).toEqual(dto.b);
+        expect(newDto.c).toEqual(dto.c);
     });
 })

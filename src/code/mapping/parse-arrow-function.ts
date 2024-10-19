@@ -1,8 +1,8 @@
-export interface ArrowFunctionInfo {
+export interface ArrowFunctionInfo<TParam,TResult> {
   getterString: string;
   setterString: string;
-  get: (v: any) => any;
-  set: (v: any, value: any) => void;
+  get: (v: TParam) => TResult;
+  set: (v: TParam , value: TResult) => void;
   propertyName?: string;
 }
 /**
@@ -10,7 +10,7 @@ export interface ArrowFunctionInfo {
  * @param f Arrowfunction giving the property
  * @returns the accessors
  */
-export function parseArrowFunction<T, U>(f: (item: T) => U) {
+export function parseArrowFunction<TParam, TResult>(f: (item: TParam) => TResult) {
   var fString = f.toString();
   var newParameterName = "v";
   var fleche = fString.indexOf("=>");
@@ -24,13 +24,24 @@ export function parseArrowFunction<T, U>(f: (item: T) => U) {
   var setter: any;
   let propertyName: string | undefined;
   try {
-    setter = eval("(" + newParameterName + ",value)=>" + setterString);
-  } catch (error) {}
-  try {
-    propertyName = f.toString().match("([a-zA-Z]+)$")![0];
+    let p=f.toString().match("([$a-zA-Z][$a-zA-Z0-9]*)$");
+    if(p){
+        propertyName = p[0];
+    } else{
+        p=f.toString().match("(\\[[$a-zA-Z][$a-zA-Z0-9]*\\])$");
+        if(p){
+            propertyName = p[0];
+        } 
+    }
+    if(propertyName){
+        setter = eval("(" + newParameterName + ",value)=>" + setterString);
+    }
+
+
   } catch (error) {}
 
-  var resultat: ArrowFunctionInfo = {
+
+  var resultat: ArrowFunctionInfo<TParam,TResult> = {
     getterString,
     setterString,
     get: getter,

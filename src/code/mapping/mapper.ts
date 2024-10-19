@@ -1,21 +1,54 @@
+import { Mapping } from "./mapping";
+import { Transformation } from "./transformation";
+export class Mapper {
+  maps: { [key: string]: Mapping<any, any> } = {};
 
-import { Map } from "./map";
-export class Mapper{
-    maps:{[key:string]:Map<any,any>}={};
-    createMap<TSource,TTarget>(name:string){
-        if(name.indexOf("|")==-1){
-            throw new Error("Map name must contain |");
-        }
-        var newMap= new Map<TSource,TTarget>(this,name);
-        this.maps[name]=newMap;
-        return newMap;
+  createMap<TTarget, TSource>(name: string) {
+    if (name.indexOf("=>") == -1) {
+      throw new Error("Map name must contain =>");
     }
-    createTypedMap<TSource,TTarget>(ctorSource:{new(...args:any[]):TSource},ctorTarget:{new(...args:any[]):TTarget}){
-        var newMap= this.createMap<TSource,TTarget>(ctorSource.name+'|'+ctorTarget.name)
-    }
-    map(name:string,obj:any){
-        var map=this.maps[name];
-        return map.map(obj);
+    var newMap = new Mapping<TTarget, TSource>(this, name);
+    this.maps[name] = newMap;
+    return newMap;
+  }
+  createTypedMap<TTarget, TSource>(
+    ctorSource: { new (...args: any[]): TTarget },
+    ctorTarget: { new (...args: any[]): TSource }
+  ) {
+    var newMap = this.createMap<TTarget, TSource>(
+      ctorSource.name + "|" + ctorTarget.name
+    );
+  }
+  map<TTarget>(mapName: string, source: any): TTarget;
+  map<TTarget, TSource>(target: TTarget, source: TSource): TTarget;
+  map<TTarget, TSource>(
+    ctorTarget: { new (...arg: any[]): TTarget },
+    source: TSource
+  ): TTarget;
 
+  map(name: any, obj: any) {
+    let mapping: string;
+    if (typeof name == "string") {
+      mapping = name;
+    } else if (name.call) {
+      mapping = name.name + "|" + obj.constructor.name;
+    } else {
+      mapping = name.constructor.name + "|" + obj.constructor.name;
     }
+    var map = this.maps[mapping];
+    return map.targetFromSource(obj);
+  }
+
+  static DateTransform = new Transformation<string, Date>(
+    (v) => new Date(v),
+    (v) => v.toDateString()
+  );
+  static JSONTransform<TObject>() {
+    var r= new Transformation<string |undefined, TObject|undefined>(
+      (v) => v? JSON.parse(v) as any as TObject : undefined,
+      (v) => v? JSON.stringify(v) : undefined
+    );
+    return r;
+  }
+
 }
