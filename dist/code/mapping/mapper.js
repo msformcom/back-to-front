@@ -8,9 +8,9 @@ class Mapper {
     }
     createMap(name) {
         if (name.indexOf("|") == -1) {
-            throw new Error("Map name cannot contains |");
+            throw new Error("Map name must contain |");
         }
-        var newMap = new map_1.Map();
+        var newMap = new map_1.Map(this, name);
         this.maps[name] = newMap;
         return newMap;
     }

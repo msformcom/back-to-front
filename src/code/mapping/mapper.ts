@@ -4,9 +4,9 @@ export class Mapper{
     maps:{[key:string]:Map<any,any>}={};
     createMap<TSource,TTarget>(name:string){
         if(name.indexOf("|")==-1){
-            throw new Error("Map name cannot contains |");
+            throw new Error("Map name must contain |");
         }
-        var newMap= new Map<TSource,TTarget>();
+        var newMap= new Map<TSource,TTarget>(this,name);
         this.maps[name]=newMap;
         return newMap;
     }

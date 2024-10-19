@@ -1,16 +1,16 @@
 import { ArrowFunctionInfo, parseArrowFunction } from "./parse-arrow-function";
 
-export class MapOptions<TSource,TPropertyTarget>{
-    constructor(public sourceInfo: ArrowFunctionInfo){};
-    targetInfo!:ArrowFunctionInfo;
-    mapFrom(targetProperty:(source:TSource)=>TPropertyTarget){
-        this.targetInfo=parseArrowFunction(targetProperty);
+export class MapOptions<TTarget,TPropertySource>{
+    constructor(public targetInfo: ArrowFunctionInfo){};
+    sourceInfo!:ArrowFunctionInfo;
+    mapFrom(sourceProperty:(source:TTarget)=>TPropertySource){
+        this.sourceInfo=parseArrowFunction(sourceProperty);
         return this as any as Omit<typeof this,"mapFrom">;
     }
 
     reverse(){
-        var r= new MapOptions(this.targetInfo);
-        r.targetInfo=this.sourceInfo;
+        var r= new MapOptions(this.sourceInfo);
+        r.sourceInfo=this.targetInfo;
         return r;
     }
 
