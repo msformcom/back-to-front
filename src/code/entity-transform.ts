@@ -1,4 +1,4 @@
-import { getPropertyName } from './getPropertyName';
+import { getPropertyName } from './mapping/parse-arrow-function';
 import { ManagedService } from './managed-service';
 
 export class EntityTransform<TSource, TTarget> {

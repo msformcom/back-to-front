@@ -5,7 +5,7 @@ import { CollectionOptions } from "./collection-options";
 import { ManagedCollection } from "./managed-collection";
 import { ServiceOptions } from "./service-options";
 import { RequestOptions } from "./request-options";
-import { getPropertyName } from "./getPropertyName";
+import { getPropertyName } from "./mapping/parse-arrow-function";
 import { EntityTransform } from "./entity-transform";
 
 export class ManagedService {
