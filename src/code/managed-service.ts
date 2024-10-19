@@ -5,8 +5,8 @@ import { CollectionOptions } from "./collection-options";
 import { ManagedCollection } from "./managed-collection";
 import { ServiceOptions } from "./service-options";
 import { RequestOptions } from "./request-options";
-import { getPropertyName } from "./mapping/parse-arrow-function";
 import { EntityTransform } from "./entity-transform";
+import { parseArrowFunction } from "./mapping/parse-arrow-function";
 
 export class ManagedService {
     constructor(public options: ServiceOptions) {}
@@ -40,7 +40,7 @@ export class ManagedService {
       return this.getOne(o2);
     }
     addNavigationProperty<T>(o : T, p:(o:T)=>any,f:any){
-      let name=getPropertyName(p);
+      let name=parseArrowFunction(p).propertyName!;
       // let getter=()=>{
   
       //   return self.lots.getMany<ListItem,ListItem>({url:l.id+"/Reservations" });

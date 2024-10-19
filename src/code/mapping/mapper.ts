@@ -1,14 +1,21 @@
 
 import { Map } from "./map";
 export class Mapper{
-    
+    maps:{[key:string]:Map<any,any>}={};
     createMap<TSource,TTarget>(name:string){
-        if(name.indexOf("|")>-1){
+        if(name.indexOf("|")==-1){
             throw new Error("Map name cannot contains |");
         }
-        return new Map<TSource,TTarget>();
+        var newMap= new Map<TSource,TTarget>();
+        this.maps[name]=newMap;
+        return newMap;
     }
     createTypedMap<TSource,TTarget>(ctorSource:{new(...args:any[]):TSource},ctorTarget:{new(...args:any[]):TTarget}){
-        return this.createMap<TSource,TTarget>(ctorSource.name+'|'+ctorTarget.name)
+        var newMap= this.createMap<TSource,TTarget>(ctorSource.name+'|'+ctorTarget.name)
+    }
+    map(name:string,obj:any){
+        var map=this.maps[name];
+        return map.map(obj);
+
     }
 }

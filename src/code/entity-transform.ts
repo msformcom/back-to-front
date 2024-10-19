@@ -1,5 +1,6 @@
-import { getPropertyName } from './mapping/parse-arrow-function';
+
 import { ManagedService } from './managed-service';
+import { parseArrowFunction } from './mapping/parse-arrow-function';
 
 export class EntityTransform<TSource, TTarget> {
   transforms: ((source: TSource, target: TTarget) => void)[] = [];
@@ -21,7 +22,7 @@ export class EntityTransform<TSource, TTarget> {
     targetProperty: (o: TTarget) => Date
   ) {
     this.addTransform((s, t) => {
-      var p = getPropertyName(targetProperty);
+      var p = parseArrowFunction(targetProperty).propertyName!;
       (t as any)[p] = new Date(sourceproperty(s));
     });
     return this;
@@ -31,7 +32,7 @@ export class EntityTransform<TSource, TTarget> {
     p: (o: TTarget) => TProperty,
     f: (source: TSource, target: TTarget) => TProperty
   ) {
-    let name = getPropertyName(p);
+    let name = parseArrowFunction(p).propertyName!;
     // let getter=()=>{
 
     //   return self.lots.getMany<ListItem,ListItem>({url:l.id+"/Reservations" });

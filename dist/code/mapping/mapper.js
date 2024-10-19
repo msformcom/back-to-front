@@ -3,14 +3,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Mapper = void 0;
 const map_1 = require("./map");
 class Mapper {
+    constructor() {
+        this.maps = {};
+    }
     createMap(name) {
-        if (name.indexOf("|") > -1) {
+        if (name.indexOf("|") == -1) {
             throw new Error("Map name cannot contains |");
         }
-        return new map_1.Map();
+        var newMap = new map_1.Map();
+        this.maps[name] = newMap;
+        return newMap;
     }
     createTypedMap(ctorSource, ctorTarget) {
-        return this.createMap(ctorSource.name + '|' + ctorTarget.name);
+        var newMap = this.createMap(ctorSource.name + '|' + ctorTarget.name);
+    }
+    map(name, obj) {
+        var map = this.maps[name];
+        return map.map(obj);
     }
 }
 exports.Mapper = Mapper;

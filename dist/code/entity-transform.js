@@ -21,13 +21,13 @@ class EntityTransform {
     }
     asDate(sourceproperty, targetProperty) {
         this.addTransform((s, t) => {
-            var p = (0, parse_arrow_function_1.getPropertyName)(targetProperty);
+            var p = (0, parse_arrow_function_1.parseArrowFunction)(targetProperty).propertyName;
             t[p] = new Date(sourceproperty(s));
         });
         return this;
     }
     addNavigationProperty(p, f) {
-        let name = (0, parse_arrow_function_1.getPropertyName)(p);
+        let name = (0, parse_arrow_function_1.parseArrowFunction)(p).propertyName;
         // let getter=()=>{
         //   return self.lots.getMany<ListItem,ListItem>({url:l.id+"/Reservations" });
         // }

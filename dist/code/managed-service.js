@@ -4,8 +4,8 @@ exports.ManagedService = void 0;
 const core_1 = require("@angular/core");
 const rxjs_1 = require("rxjs");
 const managed_collection_1 = require("./managed-collection");
-const parse_arrow_function_1 = require("./mapping/parse-arrow-function");
 const entity_transform_1 = require("./entity-transform");
+const parse_arrow_function_1 = require("./mapping/parse-arrow-function");
 class ManagedService {
     constructor(options) {
         this.options = options;
@@ -34,7 +34,7 @@ class ManagedService {
         return this.getOne(o2);
     }
     addNavigationProperty(o, p, f) {
-        let name = (0, parse_arrow_function_1.getPropertyName)(p);
+        let name = (0, parse_arrow_function_1.parseArrowFunction)(p).propertyName;
         // let getter=()=>{
         //   return self.lots.getMany<ListItem,ListItem>({url:l.id+"/Reservations" });
         // }
